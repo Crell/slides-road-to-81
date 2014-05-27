@@ -1,5 +1,5 @@
-What to expect from Drupal 8
-===================
+The road to 8.1
+===============
 
 Presentation by [Larry Garfield](http://www.garfieldtech.com)
 
