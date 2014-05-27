@@ -70,6 +70,99 @@
           </section>
         </section>
 
+        <div style="display: none;">
+
+D8: Longest release cycle ever!
+
+Let's please not do that again, ever.
+
+Prague: OK, new plan!
+
+Explain new release cycle.
+
+Important detail: What is an API break?
+
+What is an API?
+
+Old style: "Anything line that begins with the word "function"
+          And doesn't have an _
+          Except for when that counts too
+          And oh yeah, arbitrary array structures
+
+We broke APIs between versions because our architecture didn't let us do otherwise
+          Now we can do otherwise.
+
+Old core promise: "We won't break your modules."
+
+New core promise: "We won't break well-behaved modules."
+
+"Well-behaved": Needs definition.
+          Definition: Uses parts of the code we say are "safe".
+          Uses parts of the architecture we say are "safe".
+
+This is only partially a documentation problem.
+          It's also a "separate safe from unsafe" problem (which we're doing a lot better at)
+          Recommendation: Use documentation as a driver for separation
+
+Documentation kick-start: Symfony:
+          http://symfony.com/doc/current/contributing/code/bc.html
+
+Short version:
+Tests: Not an API, ever
+
+@api interface: Promise hinting, implementing, extending
+un-noted interface: Promise hinting, implementing, not extending
+@internal interface: We promise nothing
+
+@api class: Promise hinting, constructor, extending, use public
+un-noted class: Promise hinting, constructor, but NOT overriding anything (inc protected)
+@internal class: We promise nothing
+
+Recommendation: Traits follow same rules as classes
+
+
+Great, so what do we tag what?
+
+Guidelines (strategic):
+          - Security fixes trump anything (current policy)
+          - Intelligent case-by-case analysis is required; do not expect rules to shield us from being intelligent
+          - Subsystem maintainers should (usually) be responsible/have final say.
+
+Guidelines (tactical):
+          - tagged services: @api interface (sometimes normal)
+          - tagged service aggregator: @internal class?
+          - Classes we intend for extension (*Base): @api (needs privates?)
+          - Break base classes into traits (allows more elbow room; some @api/@internal, some not)
+          - 3rd party interfaces: If @api, use as is. If not, consider dumb extension
+          - Controllers: All @internal
+          - Triggered from routing declarations (_entity_view): @internal. (The declaration is the API)
+          -- Often the API is behavior, not code. So declare the behavior the API, not the code.
+          - Mark most services as private ($container->get() doesn't work)
+          - Non-private services MUST have interface
+          - Plugins: Mostly @api interface, but not always. Manager is @internal.
+          - Don't be afraid to @internal
+
+
+Other guidelines:
+          - Base classes v. diff from interface: Don't do that! (Lookin' at you BlockBase) (maybe traits?)
+          - Form arrays: @internal by default
+          - Node forms: normal? (most likely to be altered)
+          -- Problem: Most of node form is in Seven, not module. (it's already being altered)
+          - Render arrays: Document JUST the key keys, those are APIs.
+
+          -
+
+We can always raise guarantee, never lower. (So be conservative to start.)
+
+Expectation: We're going to screw up and want to change something we didn't setup for that
+Learning experience! We know not to screw it up in D9.
+
+
+Deadline: 8.0.0.
+
+
+        </div>
+
         <section id="final">
           <h2>Larry Garfield</h2>
           <p>Senior Architect, <a href="http://www.palantir.net/">Palantir.net</a></p>
