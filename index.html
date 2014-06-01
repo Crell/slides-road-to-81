@@ -147,7 +147,7 @@
           <section>
             <h3>Interfaces</h3>
             <ul>
-              <li class="fragment">@api: Safe to type hint, implement, and extent</li>
+              <li class="fragment">@api: Safe to type hint, implement, and extend</li>
               <li class="fragment">@internal: <em>Caveat implementor</em></li>
               <li class="fragment">Else: Safe to hint, implement, <em>not extend</em></li>
             </ul>
@@ -174,7 +174,7 @@
               <li class="fragment">Security fixes trump everything</li>
               <li class="fragment">This will require case-by-case thought</li>
               <li class="fragment">Private properties on @api classes?</li>
-              <li class="fragment">Don't fear @internal</li>
+              <li class="fragment">@internal: Reserve the right to change, not willy nilly</li>
               <li class="fragment">Subsystem maintainers should be responsible</li>
             </ul>
             <aside class="notes">
@@ -220,7 +220,7 @@
             <ul>
               <li class="fragment">Mark services private (no $container->get())</li>
               <li class="fragment">Public services <em>must</em> have an interface</li>
-              <li class="fragment"></li>
+              <li class="fragment">Public service names are @api</li>
             </ul>
             <aside class="notes">
               <ul>
@@ -260,15 +260,193 @@
             </aside>
           </section>
         </section>
+        <section>
+          <section>
+            <h3>Example: Breadcrumbs</h3>
+            <ul>
+              <li class="fragment">BreadcrumbBuilderInterface: <span class="fragment">@api</span></li>
+              <li class="fragment">"breadcrumb_builder" DI tag: <span class="fragment">@api</span></li>
+              <li class="fragment">"breadcrumb" service name: <span class="fragment">@api</span></li>
+              <li class="fragment">ChainBreadcrumbBuilderInterface: <span class="fragment">normal</span></li>
+              <li class="fragment">BreadcrumbManager: <span class="fragment">@internal</span></li>
+              <li class="fragment">BreadcrumbBuilderBase: <span class="fragment">Remove for traits</span></li>
+            </ul>
+            <aside class="notes">
+              <ul>
+                <li>BreadcrumbManager: implementation detail</li>
+                <li>BreadcrumbBuilderBase = 2 traits. Not needed</li>
+              </ul>
+            </aside>
+          </section>
+        </section>
+        <section>
+          <section>
+            <h2>Example:</h2>
+            <h3>Routing</h3>
+          </section>
+          <section>
+            <h3>@api</h3>
+            <div style="-webkit-column-count: 2; -moz-column-count: 2; column-count: 2;">
+              <div>
+                <h3>Interfaces</h3>
+                <ul>
+                  <li>RouteFilterInterface (wrapped)</li>
+                  <li>RouteEnhancerInterface (wrapped)</li>
+                  <li>HtmlFragmentInterface</li>
+                </ul>
+              </div>
+              <div>
+                <h3>Classes</h3>
+                <ul>
+                  <li>RouteSubscriberBase</li>
+                  <li>ControllerBase</li>
+                  <li>HtmlFragment</li>
+                  <li>All exceptions</li>
+                </ul>
+              </div>
+            </div>
+          </section>
+          <section>
+            <h3>normal</h3>
+            <div style="-webkit-column-count: 2; -moz-column-count: 2; column-count: 2;">
+              <div>
+                <h3>Interfaces</h3>
+                <ul>
+                  <li>UrlGeneratorInterface</li>
+                  <li>RouteBuilderInterface</li>
+                  <li>RouteProviderInterface</li>
+                  <li>ControllerResolverInterface</li>
+                </ul>
+              </div>
+              <div>
+                <h3>Classes</h3>
+                <ul>
+                  <li>LazyLoadingRouteCollection</li>
+                  <li>RouteBuildEvent</li>
+                  <li>UrlGenerator</li>
+                </ul>
+              </div>
+            </div>
+          </section>
+          <section>
+            <h3>@internal</h3>
+            <div style="-webkit-column-count: 2; -moz-column-count: 2; column-count: 2;">
+              <div>
+                <h3>Interfaces</h3>
+                <ul>
+                  <li>None</li>
+                </ul>
+              </div>
+              <div>
+                <h3>Classes</h3>
+                <ul>
+                  <li>MatcherDumper et al</li>
+                  <li>UrlMatcher</li>
+                  <li>RouteProvider</li>
+                  <li>CompiledRoute</li>
+                  <li>Route filters</li>
+                  <li>Route enhancers</li>
+                  <li>RouteBuilder</li>
+                  <li>RouteCompiler</li>
+                  <li>RoutePreloader</li>
+                </ul>
+              </div>
+            </div>
+          </section>
+          <section>
+            <p>So where's the API?</p>
+          </section>
+          <section>
+            <h3>It's the YAML, stupid!</h3>
+            <pre><code class="yaml" data-trim>
+node.content_overview:
+  path: '/admin/content'
+  defaults:
+    _title: 'Content'
+    _entity_list: 'node'
+  requirements:
+    _permission: 'access content overview'
+            </code></pre>
+            <ul class="fragment">
+              <li>_title / _title_callback</li>
+              <li>_content / _controller</li>
+              <li>_form</li>
+              <li>_format / method</li>
+              <li>_entity_view / _entity_form / _entity_list</li>
+            </ul>
+          </section>
+        </section>
+        <section>
+          <h2>Warning</h2>
+          <p class="fragment">We are going to screw up and want to change something we didn't plan for</p>
+          <p class="fragment">Learn by failure</p>
+          <p class="fragment">We can raise guarantee, never lower.</p>
+          <aside class="notes">
+            <ul>
+              <li>Be conservative with @api for now; expand in 8.1, 8.2</li>
+            </ul>
+          </aside>
+        </section>
+        <section>
+          <section>
+            <h3>Changing what we didn't expect</h3>
+          </section>
+          <section>
+            <h2>Rename classes/interfaces</h2>
+            <pre><code class="php" data-trim>
+class BookManager {
+  public function getAllBooks() {}
+}
+class BookRepository extends BookManager {
+  public function doSomethingNew() {}
+}
+
+function core_cool_stuff(BookRepository $repository) {
+  $books = $repository->getAllBooks();
+  $repository->doSomethingNew();
+}
+
+function contrib_cool_stuff(BookManager $manager) {
+  $books = $manager->getAllBooks();
+}
+            </code></pre>
+          </section>
+          <section>
+            <h2>Future-looking interfaces</h2>
+            <pre><code class="php" data-trim>
+/**
+ * @api
+ */
+interface OldInterface {
+  public function foo();
+}
+
+interface NewStyleInterface extends OldStyleInterface {
+  public function bar();
+}
+
+function cool_stuff(OldStyleInterface $service) {
+  if ($service instanceof NewStyleInterface) {
+    $bar = $service->bar();
+  }
+  else {
+    $bar = "Some previously assumed value.";
+  }
+  // ...
+}
+</code></pre>
+          </section>
+
+
+          <section>
+
+          </section>
+
+        </section>
 
 
         <div style="display: none;">
 
-Guidelines (tactical):
-          -
-
-Other guidelines:
-          - Render arrays: Document JUST the important keys, those are APIs.
 
 We can always raise guarantee, never lower. (So be conservative to start.)
 
