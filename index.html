@@ -65,92 +65,210 @@
             <li>Loveable pedant</li>
           </ul>
         </section>
+        <section>
           <section>
             <img src="assets/drupal-8-logo.png"  style="height: 600px;" alt="Drupal 8" data-credit="https://drupal.org/node/2119739" />
+            <span class="fragment" style="font-size: 3em;">.1</span>
+          </section>
+          <section>
+            <p class="bigtext">Longest release cycle EVAR!</p>
+            <p class="bigtext fragment">(Can we please never do that again?)</p>
+          </section>
+          <section>
+            <img src="assets/drupalcon-prague-banner.png" alt="DrupalCon Prague" />
+            <p class="fragment">OK, let's try something else</p>
+            <p class="fragment"><a href="https://prague2013.drupal.org/session/future-friendly-evolution-and-drupal-release-cycle">A new release cycle</a></p>
+          </section>
+          <section>
+            <h3>The plan</h3>
+            <ul>
+              <li class="fragment">Day 0: Drupal 8.0.0</li>
+              <li class="fragment">0+1 month: Drupal 8.0.1 (bug fixes)</li>
+              <li class="fragment">0+2 month: Drupal 8.0.2 (bug fixes)</li>
+              <li class="fragment">&hellip;</li>
+              <li class="fragment">0+6 month: Drupal 8.1.0 (new features!)</li>
+              <li class="fragment">0+7 month: Drupal 8.1.1 (bug fixes)</li>
+              <li class="fragment">0+12 month: Drupal 8.2.0 (new features!)</li>
+              <li class="fragment">0+13 month: Drupal 8.2.1 (bug fixes)</li>
+              <li class="fragment">&hellip;</li>
+              <li class="fragment">Drupal LTS: 8.x.0 (last new features)</li>
+              <li class="fragment">Drupal 9: <em>just</em> API-breaking changes</li>
+            </ul>
+          </section>
+          <section>
+            <p class="bigtext">We don't break APIs in minor versions</p>
+            <p class="fragment bigtext">(For some definition of API)</p>
+          </section>
+        </section>
+        <section>
+          <section>
+            <h3>Old API definition</h3>
+            <p class="fragment" style="text-align: left;">Any line that begins with "function" <div class="fragment" style="text-align: left;">(But not if the function starts with _ <div class="fragment" style="text-align: left;">(except when that's included too because there's no other way to do something <div class="fragment" style="text-align: left;">(When your API definition looks like LISP, you have a problem)</div>)</div>)</div></p>
+            <p class="fragment">And arrays. Lots of arrays.</p>
+          </section>
+          <section>
+            <p>We broke APIs between versions because our<br />architecture didn't let us do otherwise</p>
+            <p class="fragment">Now we can do otherwise</p>
+          </section>
+          <section>
+            <blockquote>We won't break modules in minor versions</blockquote>
+            <p>&mdash;Old BC pledge</p>
+          </section>
+        </section>
+        <section>
+          <section>
+            <blockquote>We won't break well-behaved modules in minor versions</blockquote>
+            <p>&mdash;New BC pledge</p>
+          </section>
+          <section>
+            <h3>Well-behaved modules</h3>
+            <ul>
+              <li class="fragment">Uses parts of the code we say are "safe"</li>
+              <li class="fragment">Uses parts of the architecture we say are "safe"</li>
+            </ul>
+            <p class="fragment">Documentation problem!</p>
+            <p class="fragment">Also, "separate safe from unsafe"</p>
+          </section>
+          <section>
+            <p class="bigtext">Use documentation to drive separation</p>
+            <aside class="notes">
+              <ul>
+                <li>Want to be able to change it? Define a safe layer in front of it.</li>
+              </ul>
+            </aside>
+          </section>
+        </section>
+        <section>
+          <section>
+            <h3>Documentation kick-start</h3>
+            <p><a href="http://symfony.com/doc/current/contributing/code/bc.html">Symfony BC policy</a></p>
+            <p class="fragment">Moar @ tags!</p>
+          </section>
+          <section>
+            <h3>Interfaces</h3>
+            <ul>
+              <li class="fragment">@api: Safe to type hint, implement, and extent</li>
+              <li class="fragment">@internal: <em>Caveat implementor</em></li>
+              <li class="fragment">Else: Safe to hint, implement, <em>not extend</em></li>
+            </ul>
+          </section>
+          <section>
+            <h3>Classes</h3>
+            <ul>
+              <li class="fragment">@api: Safe to type hint, __construct(), protected, public</li>
+              <li class="fragment">@internal: <em>Caveat implementor</em></li>
+              <li class="fragment">Else: Safe to type hint, __construct(), public, <em>not extend</em></li>
+              <li class="fragment">Methods may be tagged separately</li>
+            </ul>
+            <p class="fragment">(We should probably treat traits the same)</p>
+          </section>
+          <section>
+            <blockquote>We won't break @api and we'll warn you about breaks to normal classes/interfaces</blockquote>
+            <p>&mdash;New BC pledge</p>
+          </section>
+        </section>
+        <section>
+          <section>
+            <h3>Strategic considerations</h3>
+            <ul>
+              <li class="fragment">Security fixes trump everything</li>
+              <li class="fragment">This will require case-by-case thought</li>
+              <li class="fragment">Private properties on @api classes?</li>
+              <li class="fragment">Don't fear @internal</li>
+              <li class="fragment">Subsystem maintainers should be responsible</li>
+            </ul>
+            <aside class="notes">
+              <ul>
+                <li>Simple pattern application will be insufficient; no rules to shield us from being intelligent</li>
+                <li>Subsystem maintainers usually have final say!</li>
+              </ul>
+            </aside>
+          </section>
+          <section>
+            <h3>General rules</h3>
+            <ul>
+              <li class="fragment">Database schema is always @internal</li>
+              <li class="fragment">Tests are always @internal</li>
+              <li class="fragment">Controllers are always @internal</li>
+              <li class="fragment">YAML file structure MAY be an API</li>
+            </ul>
+            <aside class="notes">
+              <ul>
+                <li>Test base classes are like any other class</li>
+              </ul>
+            </aside>
+          </section>
+          <section>
+            <h3>Tactical guidelines</h3>
+            <ul>
+              <li class="fragment">"Tagged services": @api interface, tag</li>
+              <li class="fragment">"Tagged service aggregator": @internal class</li>
+              <li class="fragment">Extend classes (*Base): @api with privates</li>
+              <li class="fragment">Break base classes into multiple traits</li>
+              <li class="fragment">Plugins: <em>Mostly</em> @api interface; Manager is @internal</li>
+            </ul>
+            <aside class="notes">
+              <ul>
+                <li>Traits > Base classes: Some @api, some @internal</li>
+                <li>Think through how we want devs to interact (not how they might interact)</li>
+                <li>Small surface area is better than large surface area</li>
+              </ul>
+            </aside>
+          </section>
+          <section>
+            <h3>Container guidelines</h3>
+            <ul>
+              <li class="fragment">Mark services private (no $container->get())</li>
+              <li class="fragment">Public services <em>must</em> have an interface</li>
+              <li class="fragment"></li>
+            </ul>
+            <aside class="notes">
+              <ul>
+                <li></li>
+              </ul>
+            </aside>
+          </section>
+          <section>
+            <h3>Declarative guidelines</h3>
+            <ul>
+              <li class="fragment">Service tag names: API</li>
+              <li class="fragment">Routing key names: API</li>
+              <li class="fragment">Triggered by routing key (_form, _entity_view): @internal</li>
+              <li class="fragment">Config keys: API <span class="fragment">(unless wrapping service)</span></li>
+              <li class="fragment"></li>
+            </ul>
+            <aside class="notes">
+              <ul>
+                <li>Often the API is behavior, not code. So declare the behavior the API, not the code.</li>
+              </ul>
+            </aside>
+          </section>
+          <section>
+            <h3>Other guidelines</h3>
+            <ul>
+              <li class="fragment">3rd party interfaces: !@api => consider dumb extension</li>
+              <li class="fragment">Base class/interface mismatch: Code smell (needs traits?)</li>
+              <li class="fragment">Form arrays: Mostly @internal <span class="fragment">Except node form?</span></li>
+              <li class="fragment">Render arrays: Key definitions are the API; Specific structures are not</li>
+              <li class="fragment"></li>
+            </ul>
+            <aside class="notes">
+              <ul>
+                <li>Base classes example: BlockBase</li>
+                <li>Forms: Sneeze and they "break". Need to allow feature addition</li>
+              </ul>
+            </aside>
           </section>
         </section>
 
+
         <div style="display: none;">
 
-D8: Longest release cycle ever!
-
-Let's please not do that again, ever.
-
-Prague: OK, new plan!
-
-Explain new release cycle.
-
-Important detail: What is an API break?
-
-What is an API?
-
-Old style: "Anything line that begins with the word "function"
-          And doesn't have an _
-          Except for when that counts too
-          And oh yeah, arbitrary array structures
-
-We broke APIs between versions because our architecture didn't let us do otherwise
-          Now we can do otherwise.
-
-Old core promise: "We won't break your modules."
-
-New core promise: "We won't break well-behaved modules."
-
-"Well-behaved": Needs definition.
-          Definition: Uses parts of the code we say are "safe".
-          Uses parts of the architecture we say are "safe".
-
-This is only partially a documentation problem.
-          It's also a "separate safe from unsafe" problem (which we're doing a lot better at)
-          Recommendation: Use documentation as a driver for separation
-
-Documentation kick-start: Symfony:
-          http://symfony.com/doc/current/contributing/code/bc.html
-
-Short version:
-Tests: Not an API, ever
-
-@api interface: Promise hinting, implementing, extending
-un-noted interface: Promise hinting, implementing, not extending
-@internal interface: We promise nothing
-
-@api class: Promise hinting, constructor, extending, use public
-un-noted class: Promise hinting, constructor, but NOT overriding anything (inc protected)
-@internal class: We promise nothing
-
-Recommendation: Traits follow same rules as classes
-
-
-Great, so what do we tag what?
-
-Guidelines (strategic):
-          - Security fixes trump anything (current policy)
-          - Intelligent case-by-case analysis is required; do not expect rules to shield us from being intelligent
-          - Subsystem maintainers should (usually) be responsible/have final say.
-
 Guidelines (tactical):
-          - tagged services: @api interface (sometimes normal)
-          - tagged service aggregator: @internal class?
-          - Classes we intend for extension (*Base): @api (needs privates?)
-          - Break base classes into traits (allows more elbow room; some @api/@internal, some not)
-          - 3rd party interfaces: If @api, use as is. If not, consider dumb extension
-          - Controllers: All @internal
-          - Triggered from routing declarations (_entity_view): @internal. (The declaration is the API)
-          -- Often the API is behavior, not code. So declare the behavior the API, not the code.
-          - Mark most services as private ($container->get() doesn't work)
-          - Non-private services MUST have interface
-          - Plugins: Mostly @api interface, but not always. Manager is @internal.
-          - Don't be afraid to @internal
-
+          -
 
 Other guidelines:
-          - Base classes v. diff from interface: Don't do that! (Lookin' at you BlockBase) (maybe traits?)
-          - Form arrays: @internal by default
-          - Node forms: normal? (most likely to be altered)
-          -- Problem: Most of node form is in Seven, not module. (it's already being altered)
-          - Render arrays: Document JUST the key keys, those are APIs.
-
-          -
+          - Render arrays: Document JUST the important keys, those are APIs.
 
 We can always raise guarantee, never lower. (So be conservative to start.)
 
