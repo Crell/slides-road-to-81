@@ -42,6 +42,20 @@
       display: inline;
     }
 
+    .reveal p + p,
+    .reveal ul + p,
+    .reveal ul + h3,
+    .reveal ul + h4,
+    .reveal div + h3,
+    .reveal div + h4 {
+      margin-top: 1em;
+    }
+
+     {
+      margin-top: 1em;
+    }
+
+
     </style>
 
   </head>
@@ -73,6 +87,13 @@
           <section>
             <p class="bigtext">Longest release cycle EVAR!</p>
             <p class="bigtext fragment">(Can we please never do that again?)</p>
+            <aside class="notes">
+              <ul>
+                <li>4 year cycle necessary for architecture overhaul</li>
+                <li>We don't need overhaul every version</li>
+                <li>Unknown length of cycle => uneven plans => longer cycle => uneven plans</li>
+              </ul>
+            </aside>
           </section>
           <section>
             <img src="assets/drupalcon-prague-banner.png" alt="DrupalCon Prague" />
@@ -101,6 +122,15 @@
           </section>
         </section>
         <section>
+          <section>
+            <h3>Druplicon: API?</h3>
+            <div class="fragment">
+              <blockquote>An API is a function that performs an operation on a series of arrays.</blockquote>
+              <p>&mdash;Druplicon</p>
+            </div>
+            <p class="fragment" style="margin-top: 1em; color: red;"><strong>WRONG!</strong></p>
+            <p class="fragment" style="margin-top: 1em;">(This is why we can't have nice things.)</p>
+          </section>
           <section>
             <h3>Old API definition</h3>
             <p class="fragment" style="text-align: left;">Any line that begins with "function" <div class="fragment" style="text-align: left;">(But not if the function starts with _ <div class="fragment" style="text-align: left;">(except when that's included too because there's no other way to do something <div class="fragment" style="text-align: left;">(When your API definition looks like LISP, you have a problem)</div>)</div>)</div></p>
@@ -166,16 +196,24 @@
             <blockquote>We won't break @api and we'll warn you about breaks to normal classes/interfaces</blockquote>
             <p>&mdash;New BC pledge</p>
           </section>
+          <section>
+            <p class="bigtext">So what is an @api?</p>
+          </section>
         </section>
         <section>
+          <section>
+            <p class="bigtext">There are no hard rules</p>
+            <img src="assets/captain-barbados.gif" alt="They're more like guidelines..." data-credit="http://www.killerfilm.com/articles-2/read/captain-barbados-confirmed-for-pirates-4-14377" />
+            <p class="bigtext">Only guidelines</p>
+          </section>
           <section>
             <h3>Strategic considerations</h3>
             <ul>
               <li class="fragment">Security fixes trump everything</li>
               <li class="fragment">This will require case-by-case thought</li>
+              <li class="fragment">Subsystem maintainers should be responsible</li>
               <li class="fragment">Private properties on @api classes?</li>
               <li class="fragment">@internal: Reserve the right to change, not willy nilly</li>
-              <li class="fragment">Subsystem maintainers should be responsible</li>
             </ul>
             <aside class="notes">
               <ul>
@@ -233,9 +271,8 @@
             <ul>
               <li class="fragment">Service tag names: API</li>
               <li class="fragment">Routing key names: API</li>
-              <li class="fragment">Triggered by routing key (_form, _entity_view): @internal</li>
+              <li class="fragment">Code used by routing key (_form, _entity_view): @internal</li>
               <li class="fragment">Config keys: API <span class="fragment">(unless wrapping service)</span></li>
-              <li class="fragment"></li>
             </ul>
             <aside class="notes">
               <ul>
@@ -246,11 +283,10 @@
           <section>
             <h3>Other guidelines</h3>
             <ul>
-              <li class="fragment">3rd party interfaces: !@api => consider dumb extension</li>
+              <li class="fragment">3rd party interfaces: !@api => consider empty extension</li>
               <li class="fragment">Base class/interface mismatch: Code smell (needs traits?)</li>
               <li class="fragment">Form arrays: Mostly @internal <span class="fragment">Except node form?</span></li>
-              <li class="fragment">Render arrays: Key definitions are the API; Specific structures are not</li>
-              <li class="fragment"></li>
+              <li class="fragment">Render arrays: Key defs are API, not specific usage</li>
             </ul>
             <aside class="notes">
               <ul>
@@ -286,75 +322,53 @@
           </section>
           <section>
             <h3>@api</h3>
-            <div style="-webkit-column-count: 2; -moz-column-count: 2; column-count: 2;">
-              <div>
-                <h3>Interfaces</h3>
-                <ul>
-                  <li>RouteFilterInterface (wrapped)</li>
-                  <li>RouteEnhancerInterface (wrapped)</li>
-                  <li>HtmlFragmentInterface</li>
-                </ul>
-              </div>
-              <div>
-                <h3>Classes</h3>
-                <ul>
-                  <li>RouteSubscriberBase</li>
-                  <li>ControllerBase</li>
-                  <li>HtmlFragment</li>
-                  <li>All exceptions</li>
-                </ul>
-              </div>
-            </div>
+            <h4>Interfaces</h4>
+            <ul>
+              <li>RouteFilterInterface (wrapped)</li>
+              <li>RouteEnhancerInterface (wrapped)</li>
+              <li>HtmlFragmentInterface</li>
+            </ul>
+            <h4>Classes</h4>
+            <ul>
+              <li>RouteSubscriberBase</li>
+              <li>ControllerBase</li>
+              <li>HtmlFragment</li>
+              <li>All exceptions</li>
+            </ul>
           </section>
           <section>
             <h3>normal</h3>
-            <div style="-webkit-column-count: 2; -moz-column-count: 2; column-count: 2;">
-              <div>
-                <h3>Interfaces</h3>
-                <ul>
-                  <li>UrlGeneratorInterface</li>
-                  <li>RouteBuilderInterface</li>
-                  <li>RouteProviderInterface</li>
-                  <li>ControllerResolverInterface</li>
-                </ul>
-              </div>
-              <div>
-                <h3>Classes</h3>
-                <ul>
-                  <li>LazyLoadingRouteCollection</li>
-                  <li>RouteBuildEvent</li>
-                  <li>UrlGenerator</li>
-                </ul>
-              </div>
-            </div>
+            <h4>Interfaces</h4>
+            <ul>
+              <li>UrlGeneratorInterface</li>
+              <li>RouteBuilderInterface</li>
+              <li>RouteProviderInterface</li>
+              <li>ControllerResolverInterface</li>
+            </ul>
+            <h4>Classes</h4>
+            <ul>
+              <li>LazyLoadingRouteCollection</li>
+              <li>RouteBuildEvent</li>
+              <li>UrlGenerator</li>
+            </ul>
           </section>
           <section>
             <h3>@internal</h3>
-            <div style="-webkit-column-count: 2; -moz-column-count: 2; column-count: 2;">
-              <div>
-                <h3>Interfaces</h3>
-                <ul>
-                  <li>None</li>
-                </ul>
-              </div>
-              <div>
-                <h3>Classes</h3>
-                <ul>
-                  <li>MatcherDumper et al</li>
-                  <li>UrlMatcher</li>
-                  <li>RouteProvider</li>
-                  <li>CompiledRoute</li>
-                  <li>Route filters</li>
-                  <li>Route enhancers</li>
-                  <li>RouteBuilder</li>
-                  <li>RouteCompiler</li>
-                  <li>RoutePreloader</li>
-                </ul>
-              </div>
-            </div>
+            <h4>Classes</h4>
+            <ul>
+              <li>MatcherDumper et al</li>
+              <li>UrlMatcher</li>
+              <li>RouteProvider</li>
+              <li>CompiledRoute</li>
+              <li>Route filters</li>
+              <li>Route enhancers</li>
+              <li>RouteBuilder</li>
+              <li>RouteCompiler</li>
+              <li>RoutePreloader</li>
+            </ul>
           </section>
           <section>
-            <p>So where's the API?</p>
+            <p class="bigtext">So where's the API?</p>
           </section>
           <section>
             <h3>It's the YAML, stupid!</h3>
@@ -375,17 +389,6 @@ node.content_overview:
               <li>_entity_view / _entity_form / _entity_list</li>
             </ul>
           </section>
-        </section>
-        <section>
-          <h2>Warning</h2>
-          <p class="fragment">We are going to screw up and want to change something we didn't plan for</p>
-          <p class="fragment">Learn by failure</p>
-          <p class="fragment">We can raise guarantee, never lower.</p>
-          <aside class="notes">
-            <ul>
-              <li>Be conservative with @api for now; expand in 8.1, 8.2</li>
-            </ul>
-          </aside>
         </section>
         <section>
           <section>
@@ -436,14 +439,26 @@ function cool_stuff(OldStyleInterface $service) {
 }
 </code></pre>
           </section>
-
-
           <section>
-
+            <p class="bigtext">When we do that,<br />file a D9 issue to clean it up again</p>
           </section>
 
         </section>
+        <section>
+          <h2>Warning</h2>
+          <p class="fragment">We are going to screw up and<br />want to change something we didn't plan for</p>
+          <p class="fragment">Learn by failure</p>
+          <p class="fragment">We can raise guarantee, never lower.</p>
+          <aside class="notes">
+            <ul>
+              <li>Be conservative with @api for now; expand in 8.1, 8.2</li>
+            </ul>
+          </aside>
+        </section>
 
+        <section>
+          <h2>Discuss</h2>
+        </section>
 
         <div style="display: none;">
 
